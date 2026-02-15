@@ -1,0 +1,7 @@
+{
+  "name": "BeTransport Live",
+  "description": "A clean and modern real-time dashboard for Belgian public transport (SNCB, STIB, De Lijn). Consult train, tram, and bus schedules instantly with live status updates.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
