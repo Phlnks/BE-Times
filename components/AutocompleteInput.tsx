@@ -18,7 +18,6 @@ const AutocompleteInput: React.FC<Props> = ({ value, onChange, placeholder, mode
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  // Fix: Use ReturnType<typeof setTimeout> instead of NodeJS.Timeout to ensure compatibility in browser environments
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -26,10 +25,10 @@ const AutocompleteInput: React.FC<Props> = ({ value, onChange, placeholder, mode
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       
       setLoading(true);
+      // Increased debounce to 800ms to be safer with quotas
       timeoutRef.current = setTimeout(async () => {
         try {
           const results = await searchStops(value, mode);
-          // Only update if current value hasn't drifted too much or if exact match found
           setSuggestions(results);
           setShowSuggestions(results.length > 0);
         } catch (e) {
@@ -37,7 +36,7 @@ const AutocompleteInput: React.FC<Props> = ({ value, onChange, placeholder, mode
         } finally {
           setLoading(false);
         }
-      }, 500); // Debounce
+      }, 800); 
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
