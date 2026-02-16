@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { SearchIcon } from './icons';
-import { TransportMode } from '../types';
-import { searchStops } from '../services/transportService';
+import { SearchIcon } from './icons.tsx';
+import { TransportMode } from '../types.ts';
+import { searchStops } from '../services/transportService.ts';
 
 interface Props {
   value: string;
@@ -25,7 +25,6 @@ const AutocompleteInput: React.FC<Props> = ({ value, onChange, placeholder, mode
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       
       setLoading(true);
-      // Increased debounce to 800ms to be safer with quotas
       timeoutRef.current = setTimeout(async () => {
         try {
           const results = await searchStops(value, mode);

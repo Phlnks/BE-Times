@@ -1,11 +1,11 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { TransportMode, SearchResult, SearchOptions, Favorite } from './types';
-import { fetchTransportData } from './services/transportService';
-import { TrainIcon, BusIcon, TramIcon, SwapIcon, StarIcon, TrashIcon, SearchIcon } from './components/icons';
-import DepartureItem from './components/DepartureItem';
-import AutocompleteInput from './components/AutocompleteInput';
-import TimePicker from './components/TimePicker';
+import { TransportMode, SearchResult, SearchOptions, Favorite } from './types.ts';
+import { fetchTransportData } from './services/transportService.ts';
+import { TrainIcon, BusIcon, TramIcon, SwapIcon, StarIcon, TrashIcon, SearchIcon } from './components/icons.tsx';
+import DepartureItem from './components/DepartureItem.tsx';
+import AutocompleteInput from './components/AutocompleteInput.tsx';
+import TimePicker from './components/TimePicker.tsx';
 
 const App: React.FC = () => {
   const [mode, setMode] = useState<TransportMode>(TransportMode.SNCB);

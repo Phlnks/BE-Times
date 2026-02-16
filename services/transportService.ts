@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { TransportMode, SearchResult, Departure, SearchOptions } from "../types";
-import { SUGGESTIONS } from "../data/suggestions";
+import { TransportMode, SearchResult, Departure, SearchOptions } from "../types.ts";
+import { SUGGESTIONS } from "../data/suggestions.ts";
 
 // Caches pour éviter les appels inutiles
 let sncbStationsCache: any[] = [];
@@ -53,14 +53,12 @@ const callWithRetry = async (fn: () => Promise<any>, retries = 3, delay = 2000):
 export const searchStops = async (query: string, mode: TransportMode): Promise<string[]> => {
   if (!query || query.length < 2) return [];
 
-  // 1. Check Local Suggestions first
   const localMatches = (SUGGESTIONS[mode] || [])
     .filter(s => s.toLowerCase().includes(query.toLowerCase()))
     .slice(0, 8);
 
   if (localMatches.length >= 5) return localMatches;
 
-  // 2. Specialized SNCB logic (iRail)
   if (mode === TransportMode.SNCB) {
     try {
       if (sncbStationsCache.length === 0) {
@@ -77,13 +75,13 @@ export const searchStops = async (query: string, mode: TransportMode): Promise<s
     }
   } 
   
-  // 3. AI Search (only if local matches are low)
   const cacheKey = `search-${mode}-${query.toLowerCase()}`;
   const cached = getCachedData(cacheKey);
   if (cached) return cached;
 
   try {
     const results = await callWithRetry(async () => {
+      // Use process.env.API_KEY directly for client initialization as per guidelines
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: "gemini-3-flash-preview",
@@ -105,9 +103,6 @@ export const searchStops = async (query: string, mode: TransportMode): Promise<s
   }
 };
 
-/**
- * Fetches real-time departures from iRail (SNCB).
- */
 const fetchSNCBData = async (query: string, arrivalQuery?: string, options?: SearchOptions): Promise<SearchResult> => {
   const cacheKey = `sncb-${query}-${arrivalQuery || 'none'}-${options?.time || 'now'}`;
   const cached = getCachedData(cacheKey);
@@ -159,15 +154,13 @@ const fetchSNCBData = async (query: string, arrivalQuery?: string, options?: Sea
   return result;
 };
 
-/**
- * Fetches real-time data for STIB and De Lijn.
- */
 const fetchSmartData = async (query: string, mode: TransportMode, options?: SearchOptions): Promise<SearchResult> => {
   const cacheKey = `smart-${mode}-${query}-${options?.time || 'now'}`;
   const cached = getCachedData(cacheKey);
   if (cached) return cached;
 
   const result = await callWithRetry(async () => {
+    // Use process.env.API_KEY directly for client initialization as per guidelines
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const dateTimeStr = options ? `le ${options.date} à ${options.time}` : 'maintenant';
     const officialSource = mode === TransportMode.STIB ? 'stib-mivb.be' : 'delijn.be';
