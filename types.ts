@@ -5,6 +5,16 @@ export enum TransportMode {
   DeLijn = 'De Lijn'
 }
 
+export interface TripLeg {
+  line: string;
+  departureStation: string;
+  departureTime: string;
+  arrivalStation: string;
+  arrivalTime: string;
+  platform?: string;
+  delay?: string | null;
+}
+
 export interface Departure {
   id: string;
   line: string;
@@ -13,6 +23,8 @@ export interface Departure {
   delay: string | null;
   platform?: string;
   status: 'ontime' | 'delayed' | 'cancelled';
+  arrivalTime?: string; // Pour les trajets complets
+  legs?: TripLeg[];    // Pour les correspondances
 }
 
 export interface GroundingSource {
