@@ -112,7 +112,7 @@ const fetchSNCBData = async (query: string, arrivalQuery?: string, options?: Sea
   const time = options ? formatIRailTime(options.time) : '';
   
   let url = '';
-  if (arrivalQuery) {
+  if (arrivalQuery && arrivalQuery.trim() !== '') {
     url = `https://api.irail.be/v1/connections/?from=${encodeURIComponent(query)}&to=${encodeURIComponent(arrivalQuery)}&date=${date}&time=${time}&format=json&lang=fr`;
   } else {
     url = `https://api.irail.be/v1/liveboard/?station=${encodeURIComponent(query)}&date=${date}&time=${time}&format=json&lang=fr`;
@@ -154,8 +154,8 @@ const fetchSNCBData = async (query: string, arrivalQuery?: string, options?: Sea
   return result;
 };
 
-const fetchSmartData = async (query: string, mode: TransportMode, options?: SearchOptions): Promise<SearchResult> => {
-  const cacheKey = `smart-${mode}-${query}-${options?.time || 'now'}`;
+const fetchSmartData = async (query: string, mode: TransportMode, arrivalQuery?: string, options?: SearchOptions): Promise<SearchResult> => {
+  const cacheKey = `smart-${mode}-${query}-${arrivalQuery || 'any'}-${options?.time || 'now'}`;
   const cached = getCachedData(cacheKey);
   if (cached) return cached;
 
@@ -165,11 +165,12 @@ const fetchSmartData = async (query: string, mode: TransportMode, options?: Sear
     const dateTimeStr = options ? `le ${options.date} à ${options.time}` : 'maintenant';
     const officialSource = mode === TransportMode.STIB ? 'stib-mivb.be' : 'delijn.be';
     
-    const systemInstruction = `Extract real-time departures for ${mode} at stop "${query}" for ${dateTimeStr}. Use official site ${officialSource}. Return JSON only.`;
+    const destinationPart = arrivalQuery && arrivalQuery.trim() !== '' ? ` en direction de "${arrivalQuery}"` : '';
+    const systemInstruction = `Extract real-time departures for ${mode} at stop "${query}"${destinationPart} for ${dateTimeStr}. Use official site ${officialSource}. Return JSON only. If a destination is specified, filter the results to only include vehicles going that way if possible, or show all at that stop otherwise.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Prochains passages officiels en temps réel à l'arrêt ${query} (${mode}) via ${officialSource} pour ${dateTimeStr}.`,
+      contents: `Prochains passages officiels en temps réel à l'arrêt ${query}${destinationPart} (${mode}) via ${officialSource} pour ${dateTimeStr}.`,
       config: {
         systemInstruction,
         tools: [{ googleSearch: {} }],
@@ -203,6 +204,6 @@ export const fetchTransportData = async (
   if (mode === TransportMode.SNCB) {
     return fetchSNCBData(query, arrivalQuery, options);
   } else {
-    return fetchSmartData(query, mode, options);
+    return fetchSmartData(query, mode, arrivalQuery, options);
   }
 };

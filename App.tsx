@@ -64,7 +64,7 @@ const App: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchTransportData(searchFrom, searchMode, searchMode === TransportMode.SNCB ? searchTo : undefined, options);
+      const data = await fetchTransportData(searchFrom, searchMode, searchTo, options);
       setResults(data);
     } catch (err: any) {
       if (err?.message?.includes('429')) {
@@ -92,7 +92,7 @@ const App: React.FC = () => {
         id: Date.now().toString(),
         mode,
         from: query,
-        to: mode === TransportMode.SNCB ? arrivalQuery : undefined
+        to: arrivalQuery.trim() !== '' ? arrivalQuery : undefined
       };
       setFavorites([...favorites, newFav]);
     }
@@ -185,7 +185,7 @@ const App: React.FC = () => {
           </h2>
           
           <form onSubmit={handleSearch} className="max-w-2xl mx-auto space-y-6">
-            <div className={`relative grid ${mode === TransportMode.SNCB ? 'grid-cols-1 md:grid-cols-2 gap-4' : 'grid-cols-1'}`}>
+            <div className="relative grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1 text-left">
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">Départ</label>
                 <AutocompleteInput
@@ -197,45 +197,41 @@ const App: React.FC = () => {
                 />
               </div>
 
-              {mode === TransportMode.SNCB && (
-                <>
-                  <div className="absolute left-1/2 top-[54px] -translate-x-1/2 -translate-y-1/2 z-10 hidden md:block">
-                    <button
-                      type="button"
-                      onClick={swapStations}
-                      className="p-2 bg-white border-2 border-slate-200 rounded-full text-slate-400 hover:text-blue-600 hover:border-blue-400 hover:rotate-180 transition-all duration-300 shadow-sm"
-                      title="Inverser les gares"
-                    >
-                      <SwapIcon className="w-5 h-5 rotate-90" />
-                    </button>
-                  </div>
-                  <div className="flex justify-center md:hidden -my-2 relative z-10">
-                    <button
-                      type="button"
-                      onClick={swapStations}
-                      className="p-2 bg-white border-2 border-slate-200 rounded-full text-slate-400 hover:text-blue-600 transition-all shadow-sm"
-                    >
-                      <SwapIcon className="w-4 h-4" />
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-1 text-left">
-                    <label className="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">Arrivée (Optionnel)</label>
-                    <AutocompleteInput
-                      value={arrivalQuery}
-                      onChange={setArrivalQuery}
-                      mode={mode}
-                      placeholder="Destination..."
-                      borderColor={getBorderColor()}
-                      icon={
-                        <div className="w-5 h-5 flex items-center justify-center">
-                          <div className="w-2.5 h-2.5 rounded-full border-2 border-slate-400"></div>
-                        </div>
-                      }
-                    />
-                  </div>
-                </>
-              )}
+              <div className="absolute left-1/2 top-[54px] -translate-x-1/2 -translate-y-1/2 z-10 hidden md:block">
+                <button
+                  type="button"
+                  onClick={swapStations}
+                  className="p-2 bg-white border-2 border-slate-200 rounded-full text-slate-400 hover:text-blue-600 hover:border-blue-400 hover:rotate-180 transition-all duration-300 shadow-sm"
+                  title="Inverser les gares"
+                >
+                  <SwapIcon className="w-5 h-5 rotate-90" />
+                </button>
+              </div>
+              <div className="flex justify-center md:hidden -my-2 relative z-10">
+                <button
+                  type="button"
+                  onClick={swapStations}
+                  className="p-2 bg-white border-2 border-slate-200 rounded-full text-slate-400 hover:text-blue-600 transition-all shadow-sm"
+                >
+                  <SwapIcon className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="space-y-1 text-left">
+                <label className="text-[10px] font-black text-slate-400 uppercase ml-2 tracking-widest">Arrivée (Optionnel)</label>
+                <AutocompleteInput
+                  value={arrivalQuery}
+                  onChange={setArrivalQuery}
+                  mode={mode}
+                  placeholder={mode === TransportMode.SNCB ? "Destination..." : "Vers (ex: De Brouckère)..."}
+                  borderColor={getBorderColor()}
+                  icon={
+                    <div className="w-5 h-5 flex items-center justify-center">
+                      <div className="w-2.5 h-2.5 rounded-full border-2 border-slate-400"></div>
+                    </div>
+                  }
+                />
+              </div>
             </div>
 
             <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-center gap-6">
@@ -368,7 +364,7 @@ const App: React.FC = () => {
             <div className="flex items-center justify-between px-2">
               <h3 className="text-xl font-black text-slate-900 flex items-center gap-3">
                 <span className={`w-1.5 h-8 rounded-full ${getThemeColor()}`}></span>
-                {arrivalQuery && mode === TransportMode.SNCB 
+                {arrivalQuery && query 
                   ? `${query} ➔ ${arrivalQuery}`
                   : `${query}`}
               </h3>
@@ -395,7 +391,7 @@ const App: React.FC = () => {
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
                 </div>
                 <p className="text-slate-500 font-bold text-lg">Aucun passage détecté</p>
-                <p className="text-slate-400 text-sm mt-1">Les données officielles pour cet horaire sont vides.</p>
+                <p className="text-slate-400 text-sm mt-1">Les données officielles pour cet horaire sont vides ou filtrées.</p>
               </div>
             )}
 
