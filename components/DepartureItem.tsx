@@ -26,13 +26,6 @@ const DepartureItem: React.FC<Props> = ({ departure, mode }) => {
     }
   };
 
-  const getLineBadgeStyle = (line: string) => {
-    if (mode === 'SNCB') return 'bg-blue-600 text-white';
-    if (mode === 'STIB') return 'bg-red-700 text-white';
-    if (mode === 'De Lijn') return 'bg-yellow-400 text-slate-900';
-    return 'bg-slate-200 text-slate-600';
-  };
-
   const hasLegs = departure.legs && departure.legs.length > 1;
 
   return (
@@ -53,18 +46,13 @@ const DepartureItem: React.FC<Props> = ({ departure, mode }) => {
               <h3 className="text-lg font-bold text-slate-900 leading-tight">
                 {departure.destination}
               </h3>
-              {hasLegs && (
-                <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-black rounded border border-blue-100 uppercase tracking-tighter">
-                  {departure.legs!.length - 1} corresp.
-                </span>
-              )}
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <span className={`px-2 py-0.5 text-[10px] font-black rounded uppercase tracking-wider ${getLineBadgeStyle(departure.line)}`}>
+              <span className="px-2 py-0.5 text-[10px] font-black rounded uppercase tracking-wider bg-blue-600 text-white">
                 {departure.line}
               </span>
               {departure.platform && (
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Quai {departure.platform}</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Voie {departure.platform}</span>
               )}
               {departure.arrivalTime && (
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">• Arrivée {departure.arrivalTime}</span>
@@ -98,9 +86,8 @@ const DepartureItem: React.FC<Props> = ({ departure, mode }) => {
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium">
                     <span>Vers {leg.arrivalStation} • Arrivée {leg.arrivalTime}</span>
-                    {leg.platform && <span>Quai {leg.platform}</span>}
+                    {leg.platform && <span>Voie {leg.platform}</span>}
                   </div>
-                  {leg.delay && <span className="text-[10px] font-bold text-orange-500">{leg.delay} de retard</span>}
                 </div>
               </div>
             ))}

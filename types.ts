@@ -1,8 +1,6 @@
 
 export enum TransportMode {
-  SNCB = 'SNCB',
-  STIB = 'STIB',
-  DeLijn = 'De Lijn'
+  SNCB = 'SNCB'
 }
 
 export interface TripLeg {
@@ -23,8 +21,8 @@ export interface Departure {
   delay: string | null;
   platform?: string;
   status: 'ontime' | 'delayed' | 'cancelled';
-  arrivalTime?: string; // Pour les trajets complets
-  legs?: TripLeg[];    // Pour les correspondances
+  arrivalTime?: string; 
+  legs?: TripLeg[];    
 }
 
 export interface GroundingSource {

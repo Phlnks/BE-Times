@@ -14,17 +14,5 @@ export const SUGGESTIONS: Record<TransportMode, string[]> = {
     'Libramont', 'Marloie', 'Rochefort-Jemelle', 'Eupen', 'Welkenraedt', 'Visé', 'Genk', 'Beveren',
     'Saint-Nicolas (Sint-Niklaas)', 'Termonde (Dendermonde)', 'Knokke', 'Blankenberge', 'La Panne (De Panne)',
     'Roulers (Roeselare)', 'Ypres (Ieper)', 'Poperinge', 'Dunkerque', 'Maastricht', 'Luxembourg'
-  ],
-  [TransportMode.STIB]: [
-    'Rogier', 'De Brouckère', 'Arts-Loi', 'Montgomery', 'Louise', 'Schuman', 'Gare Centrale',
-    'Gare du Midi', 'Simonis', 'Delta', 'Beekkant', 'Trône', 'Porte de Namur', 'Mérode',
-    'Stockel', 'Erasme', 'Roodebeek', 'Heysel', 'Belgica', 'Diamant', 'Flagey', 'Bourse',
-    'Sainte-Catherine', 'Botanique', 'Madou', 'Parc', 'Porte de Hal', 'Horta', 'Albert'
-  ],
-  [TransportMode.DeLijn]: [
-    'Antwerpen Rooseveltplaats', 'Antwerpen Groenplaats', 'Antwerpen Centraal', 'Gent Zuid', 
-    'Gent Sint-Pieters', 'Mechelen Station', 'Leuven Station', 'Hasselt Station', 'Genk Station', 
-    'Brugge Station', 'Oostende Station', 'Kortrijk Station', 'Aalst Station', 'Sint-Niklaas Station', 
-    'Turnhout Station', 'Knokke Station', 'Lier Station', 'Tongeren Station', 'Ieper Station'
   ]
 };
