@@ -31,38 +31,41 @@ const DepartureItem: React.FC<Props> = ({ departure, mode }) => {
   return (
     <div className={`bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden transition-all duration-300 ${expanded ? 'ring-2 ring-blue-100 shadow-lg' : 'hover:border-blue-200'}`}>
       <div 
-        className={`flex items-center justify-between p-4 cursor-pointer ${hasLegs ? 'hover:bg-slate-50' : ''}`}
+        className={`flex items-start justify-between p-4 cursor-pointer gap-3 ${hasLegs ? 'hover:bg-slate-50' : ''}`}
         onClick={() => hasLegs && setExpanded(!expanded)}
       >
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col items-center justify-center min-w-[3.5rem] h-14 bg-slate-50 rounded-xl">
-            <span className="text-xl font-bold text-slate-800 tracking-tight">{departure.time}</span>
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          {/* Bloc Heure - Fixe sur mobile pour l'alignement */}
+          <div className="flex flex-col items-center justify-center min-w-[3.5rem] w-14 h-14 bg-slate-50 rounded-xl shrink-0">
+            <span className="text-lg font-bold text-slate-800 tracking-tight">{departure.time}</span>
             {departure.delay && (
-              <span className="text-[10px] font-black text-orange-600 leading-none">{departure.delay}</span>
+              <span className="text-[9px] font-black text-orange-600 leading-none">{departure.delay}</span>
             )}
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold text-slate-900 leading-tight">
-                {departure.destination}
-              </h3>
-            </div>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="px-2 py-0.5 text-[10px] font-black rounded uppercase tracking-wider bg-blue-600 text-white">
+
+          {/* Bloc Infos - Flexible et tronquable si trop long */}
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base font-bold text-slate-900 leading-tight truncate pr-1">
+              {departure.destination}
+            </h3>
+            
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5">
+              <span className="px-1.5 py-0.5 text-[9px] font-black rounded uppercase tracking-wider bg-blue-600 text-white shrink-0">
                 {departure.line}
               </span>
               {departure.platform && (
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Voie {departure.platform}</span>
+                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest shrink-0">Voie {departure.platform}</span>
               )}
               {departure.arrivalTime && (
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">• Arrivée {departure.arrivalTime}</span>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest shrink-0">• Arr. {departure.arrivalTime}</span>
               )}
             </div>
           </div>
         </div>
         
-        <div className="flex flex-col items-end gap-2">
-          <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-wider rounded-full ${getStatusColor(departure.status)}`}>
+        {/* Statut - Aligné à droite */}
+        <div className="flex flex-col items-end gap-2 shrink-0">
+          <span className={`px-2 py-1 text-[9px] font-black uppercase tracking-wider rounded-full whitespace-nowrap ${getStatusColor(departure.status)}`}>
             {getStatusLabel(departure.status)}
           </span>
           {hasLegs && (
@@ -79,14 +82,14 @@ const DepartureItem: React.FC<Props> = ({ departure, mode }) => {
             {departure.legs!.map((leg, idx) => (
               <div key={idx} className="relative">
                 <div className="absolute -left-[21px] top-1.5 w-4 h-4 rounded-full bg-white border-4 border-blue-600 z-10"></div>
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-slate-900">{leg.departureTime} • {leg.departureStation}</span>
-                    <span className="text-[10px] font-black px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded uppercase">{leg.line}</span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-black text-slate-900 truncate">{leg.departureTime} • {leg.departureStation}</span>
+                    <span className="text-[9px] font-black px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded uppercase shrink-0">{leg.line}</span>
                   </div>
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium">
-                    <span>Vers {leg.arrivalStation} • Arrivée {leg.arrivalTime}</span>
-                    {leg.platform && <span>Voie {leg.platform}</span>}
+                  <div className="flex items-center justify-between text-[10px] text-slate-500 font-medium">
+                    <span className="truncate pr-2">Vers {leg.arrivalStation} • {leg.arrivalTime}</span>
+                    {leg.platform && <span className="shrink-0">Voie {leg.platform}</span>}
                   </div>
                 </div>
               </div>

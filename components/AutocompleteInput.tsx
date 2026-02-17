@@ -67,7 +67,7 @@ const AutocompleteInput: React.FC<Props> = ({ value, onChange, placeholder, mode
           if (suggestions.length > 0) setShowSuggestions(true);
         }}
         placeholder={placeholder}
-        className={`w-full h-14 pl-12 pr-12 rounded-xl border-2 bg-white text-slate-900 placeholder-slate-400 text-base font-medium shadow-md focus:outline-none focus:ring-4 focus:ring-slate-100 transition-all ${borderColor}`}
+        className={`w-full h-14 pl-12 pr-12 rounded-xl border-2 bg-white text-slate-900 placeholder-slate-400 text-base font-medium shadow-md focus:outline-none focus:ring-4 focus:ring-blue-50 transition-all ${borderColor}`}
       />
       
       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -76,17 +76,17 @@ const AutocompleteInput: React.FC<Props> = ({ value, onChange, placeholder, mode
 
       {loading && (
         <div className="absolute right-4 top-1/2 -translate-y-1/2">
-          <div className="w-4 h-4 border-2 border-slate-200 border-t-slate-400 rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-2 border-slate-200 border-t-blue-700 rounded-full animate-spin"></div>
         </div>
       )}
 
       {showSuggestions && (
-        <ul className="absolute z-[100] left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <ul className="absolute z-[100] left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 max-h-[250px] overflow-y-auto">
           {suggestions.map((suggestion, index) => (
             <li key={index}>
               <button
                 type="button"
-                className="w-full text-left px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors border-b border-slate-50 last:border-0"
+                className="w-full text-left px-4 py-3.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-700 transition-colors border-b border-slate-50 last:border-0 truncate"
                 onClick={() => {
                   onChange(suggestion);
                   setShowSuggestions(false);
