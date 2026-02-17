@@ -54,35 +54,51 @@ const fetchSNCBData = async (query: string, arrivalQuery?: string, options?: Sea
   if (data.connection) {
     data.connection.forEach((c: any, i: number) => {
       const legs: TripLeg[] = [];
-      const addLeg = (legData: any, target: string, arrTime: string) => {
+      
+      const formatTime = (timestamp: string) => {
+        if (!timestamp) return "--:--";
+        return new Date(parseInt(timestamp) * 1000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      };
+
+      const addLeg = (legData: any, startTime: string, target: string, arrTime: string) => {
+        // Dans une correspondance (via), le quai et le retard sont dans l'objet departure/arrival imbriqué
+        const platform = legData.departure ? legData.departure.platform : legData.platform;
+        const rawDelay = legData.departure ? legData.departure.delay : legData.delay;
+        const delay = parseInt(rawDelay || "0") > 0 ? `+${Math.floor(parseInt(rawDelay) / 60)} min` : null;
+
         legs.push({
           line: legData.vehicle.split('.').pop(),
           departureStation: legData.station,
-          departureTime: new Date(parseInt(legData.time) * 1000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+          departureTime: formatTime(startTime),
           arrivalStation: target,
           arrivalTime: arrTime,
-          platform: legData.platform,
-          delay: parseInt(legData.delay) > 0 ? `+${Math.floor(legData.delay / 60)} min` : null
+          platform: platform,
+          delay: delay
         });
       };
 
-      const finalDestTime = new Date(parseInt(c.arrival.time) * 1000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const finalDestTime = formatTime(c.arrival.time);
       
-      // Premier train
-      addLeg(c.departure, c.vias?.via ? c.vias.via[0].station : c.arrival.station, c.vias?.via ? new Date(parseInt(c.vias.via[0].arrival.time) * 1000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : finalDestTime);
+      // Premier train du trajet
+      const firstLegTarget = c.vias?.via ? c.vias.via[0].station : c.arrival.station;
+      const firstLegArrTime = c.vias?.via ? formatTime(c.vias.via[0].arrival.time) : finalDestTime;
+      addLeg(c.departure, c.departure.time, firstLegTarget, firstLegArrTime);
 
-      // Trains suivants si correspondance
+      // Trains suivants si correspondance (vias)
       if (c.vias?.via) {
         c.vias.via.forEach((v: any, idx: number) => {
           const nextTarget = c.vias.via[idx + 1] ? c.vias.via[idx + 1].station : c.arrival.station;
-          const nextArrTime = c.vias.via[idx + 1] ? new Date(parseInt(c.vias.via[idx + 1].arrival.time) * 1000).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : finalDestTime;
-          addLeg(v, nextTarget, nextArrTime);
+          const nextArrTime = c.vias.via[idx + 1] ? formatTime(c.vias.via[idx + 1].arrival.time) : finalDestTime;
+          
+          // CRUCIAL: Utiliser v.departure.time car v.time n'existe pas dans l'objet via
+          const departureTime = v.departure ? v.departure.time : (v.time || c.departure.time);
+          addLeg(v, departureTime, nextTarget, nextArrTime);
         });
       }
 
       departures.push({
         id: `sncb-conn-${i}`,
-        line: legs.length > 1 ? `Correspondance` : legs[0].line,
+        line: legs.length > 1 ? `Trajet à ${legs.length} trains` : legs[0].line,
         destination: c.arrival.station,
         time: legs[0].departureTime,
         arrivalTime: finalDestTime,
