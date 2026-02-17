@@ -149,7 +149,7 @@ const App: React.FC = () => {
               <TrainIcon className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 tracking-tight">BeTransport Live</h1>
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight">SNCB, STIB & De Lijn Easy</h1>
               <p className="text-xs text-slate-500 font-medium tracking-wide uppercase">Official APIs & Smart Connectors</p>
             </div>
           </div>
@@ -437,7 +437,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="mt-20 border-t border-slate-200 pt-10 text-center text-slate-400 text-xs font-bold tracking-widest uppercase">
-        <p>&copy; {new Date().getFullYear()} BeTransport Live &bull; Powered by Official Data & Gemini Flash</p>
+        <p>&copy; {new Date().getFullYear()} SNCB, STIB & De Lijn Easy &bull; Powered by Official Data & Gemini Flash</p>
       </footer>
     </div>
   );
